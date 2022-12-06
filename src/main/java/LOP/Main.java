@@ -1,4 +1,4 @@
-package lop;
+package LOP;
 
 ;
 public class Main {
