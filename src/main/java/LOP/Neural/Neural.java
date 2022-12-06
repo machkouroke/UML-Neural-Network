@@ -7,7 +7,8 @@ public class Neural {
     private double bias;
     private Aggregate aggregateFunc;
     private Transfert transfertFunc;
-    Neural(double bias, Aggregate aggregateFunc, Transfert transfertFunc) {
+
+    public Neural(double bias, Aggregate aggregateFunc, Transfert transfertFunc) {
         this.bias = bias;
         this.aggregateFunc = aggregateFunc;
         this.transfertFunc = transfertFunc;

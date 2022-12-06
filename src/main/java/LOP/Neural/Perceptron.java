@@ -7,8 +7,8 @@ import java.util.List;
 
 public abstract class Perceptron extends NeuralNetwork {
 
-    Perceptron(int layerNumber) {
-        super(layerNumber);
+    Perceptron(int layerNumber, int inputSize) {
+        super(layerNumber, new int[]{inputSize, 1});
     }
 }
 
