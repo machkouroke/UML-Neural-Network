@@ -1,11 +1,12 @@
 package LOP.Function.Transfert;
 
+
 import LOP.utilities.Matrix;
 
-abstract public class Transfert {
-    private Matrix matrix;
+public abstract class Transfert  {
+    protected Transfert() {
 
-    Transfert(Matrix matrix) {
-        this.matrix = matrix;
     }
+    public abstract Matrix apply(Matrix matrix);
+    public abstract Matrix derivative(Matrix matrix);
 }

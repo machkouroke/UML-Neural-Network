@@ -2,8 +2,16 @@ package LOP.Function.Transfert;
 
 import LOP.utilities.Matrix;
 
-public class Sigmoid {
-    public static Matrix apply(Matrix matrix) {
+
+public class Sigmoid extends Transfert {
+
+    public Sigmoid() {
+        super();
+    }
+
+
+    @Override
+    public Matrix apply(Matrix matrix) {
         Matrix temp = new Matrix(
                 matrix.getRows(),
                 matrix.getCols()
@@ -15,7 +23,8 @@ public class Sigmoid {
         return temp;
     }
 
-    public static Matrix derivative(Matrix matrix) {
+    @Override
+    public Matrix derivative(Matrix matrix) {
         Matrix temp = new Matrix(matrix.getRows(), matrix.getCols());
         for (int i = 0; i < temp.getRows(); i++) {
             for (int j = 0; j < temp.getCols(); j++)
@@ -23,4 +32,5 @@ public class Sigmoid {
         }
         return temp;
     }
+
 }
