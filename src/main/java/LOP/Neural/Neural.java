@@ -1,15 +1,15 @@
 package LOP.Neural;
 
 import LOP.Function.Aggregate;
-import LOP.Function.Transfert;
+import LOP.Function.Transfert.Transfert;
 
 public class Neural {
     private float weight;
-    private Aggregate aggregFunc;
+    private Aggregate aggregateFunc;
     private Transfert transfertFunc;
-    Neural(float weight, Aggregate aggregFunc, Transfert transfertFunc) {
+    Neural(float weight, Aggregate aggregateFunc, Transfert transfertFunc) {
         this.weight = weight;
-        this.aggregFunc = aggregFunc;
+        this.aggregateFunc = aggregateFunc;
         this.transfertFunc = transfertFunc;
     }
 }
