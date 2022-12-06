@@ -1,10 +1,11 @@
 package LOP.utilities;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Matrix {
-    double[][] data;
+    public double[][] data;
 
     public double[][] getData() {
         return data;
@@ -36,10 +37,14 @@ public class Matrix {
     }
 
     public Matrix(double[][] data) {
-        this.data = data;
+        this.data = Arrays.stream(data)
+                .map(double[]::clone)
+                .toArray(s -> data.clone());
+
         this.rows = data.length;
         this.cols = data[0].length;
     }
+
     public void add(double scaler) {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
@@ -62,14 +67,19 @@ public class Matrix {
         }
     }
 
-    public static Matrix subtract(Matrix a, Matrix b) {
+    public static Matrix add(Matrix a, Matrix b) {
         Matrix temp = new Matrix(a.rows, a.cols);
         for (int i = 0; i < a.rows; i++) {
             for (int j = 0; j < a.cols; j++) {
-                temp.data[i][j] = a.data[i][j] - b.data[i][j];
+                temp.data[i][j] = a.data[i][j] + b.data[i][j];
             }
         }
         return temp;
+    }
+
+    public static Matrix subtract(Matrix a, Matrix b) {
+
+        return Matrix.add(a, Matrix.multiply(b, -1));
     }
 
     public static Matrix transpose(Matrix a) {
@@ -87,7 +97,6 @@ public class Matrix {
         for (int i = 0; i < x.length; i++)
             temp.data[i][0] = x[i];
         return temp;
-
     }
 
     public static Matrix multiply(Matrix a, Matrix b) {
@@ -99,6 +108,16 @@ public class Matrix {
                     sum += a.data[i][k] * b.data[k][j];
                 }
                 temp.data[i][j] = sum;
+            }
+        }
+        return temp;
+    }
+
+    public static Matrix multiply(Matrix a, double c) {
+        Matrix temp = new Matrix(a.rows, a.cols);
+        for (int i = 0; i < temp.rows; i++) {
+            for (int j = 0; j < temp.cols; j++) {
+                temp.data[i][j] *= c;
             }
         }
         return temp;
