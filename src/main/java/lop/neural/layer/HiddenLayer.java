@@ -26,11 +26,9 @@ public class HiddenLayer extends Layer {
     }
 
 
-
     public Aggregate getAggregateFunc() {
         return aggregateFunc;
     }
-
 
 
     public Matrix getIncomingWeights() {
@@ -41,6 +39,14 @@ public class HiddenLayer extends Layer {
         this.incomingWeights = incomingWeights;
     }
 
+    /**
+     * @param neuroneNumber   Nombre de neurones dans la couche
+     * @param incomingWeights Matrice de taille (neuroneNumber, neuroneNumber-1 (Nombre de
+     *                        neurones dans la couche précédente) des poids entrants
+     * @param bias            Matrice de taille (neuroneNumber, 1) des biais
+     * @param transfertFunc   Fonction de transfert de tous les neurones de la couche
+     * @param aggregateFunc   Fonction d'agrégation de tous les neurones de la couche
+     */
     public HiddenLayer(int neuroneNumber, Matrix incomingWeights, Matrix bias, Transfert transfertFunc,
                        Aggregate aggregateFunc) {
         super(neuroneNumber);
@@ -48,7 +54,7 @@ public class HiddenLayer extends Layer {
         this.bias = bias;
         this.transfertFunc = transfertFunc;
         this.aggregateFunc = aggregateFunc;
-        this.neurones = IntStream.of(neuroneNumber)
+        this.neurones = IntStream.range(0, neuroneNumber)
                 .mapToObj(i -> new Neural(bias.data[i][0], aggregateFunc, transfertFunc))
                 .collect(Collectors.toList());
     }

@@ -1,12 +1,12 @@
 package lop.neural;
 
+import lop.exception.DimensionMismatchException;
 import lop.function.aggregate.Sum;
 import lop.function.transfert.Sigmoid;
 import lop.neural.layer.HiddenLayer;
 import lop.neural.layer.InputLayer;
 import lop.neural.layer.Layer;
 import lop.utilities.Matrix;
-
 
 
 import java.util.List;
@@ -28,7 +28,7 @@ public abstract class NeuralNetwork {
      */
     NeuralNetwork(int layerNumber, int[] layersSize) {
         this.layerNumber = layerNumber;
-        this.hiddenLayers = IntStream.range(1, layersSize.length - 2)
+        this.hiddenLayers = IntStream.range(1, layersSize.length - 1)
                 .mapToObj(i -> new HiddenLayer(layersSize[i], new Matrix(layersSize[i], layersSize[i - 1]),
                         new Matrix(layersSize[i], 1), new Sigmoid(), new Sum()))
                 .collect(Collectors.toList());
@@ -36,12 +36,12 @@ public abstract class NeuralNetwork {
         int last = layersSize.length - 1;
         this.outputLayer = new HiddenLayer(layersSize[last], new Matrix(layersSize[last - 1], layersSize[last]),
                 new Matrix(layersSize[last], 1), new Sigmoid(), new Sum());
-        this.layers = Stream.concat(Stream.of(inputLayer), Stream.concat(hiddenLayers.stream(),
-                        Stream.of(outputLayer)))
+        this.layers = Stream.concat(hiddenLayers.stream(),
+                        Stream.of(outputLayer))
                 .collect(Collectors.toList());
     }
 
-    public abstract void fit(Matrix x, Matrix y, int epochs);
+    public abstract void fit(Matrix x, Matrix y, int epochs) throws DimensionMismatchException;
 
-    public abstract Matrix predict(Matrix y);
+    public abstract Matrix predict(Matrix y) throws DimensionMismatchException;
 }

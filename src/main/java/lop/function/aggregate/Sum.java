@@ -1,9 +1,10 @@
 package lop.function.aggregate;
 
+import lop.exception.DimensionMismatchException;
 import lop.utilities.Matrix;
 
 public class Sum implements Aggregate {
-    public Matrix apply(Matrix a, Matrix b, Matrix w) {
+    public Matrix apply(Matrix a, Matrix b, Matrix w) throws DimensionMismatchException {
         return Matrix.add(Matrix.dot(a, w), b);
     }
 
