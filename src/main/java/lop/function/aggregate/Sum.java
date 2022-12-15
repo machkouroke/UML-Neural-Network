@@ -5,7 +5,8 @@ import lop.utilities.Matrix;
 
 public class Sum implements Aggregate {
     public Matrix apply(Matrix a, Matrix b, Matrix w) throws DimensionMismatchException {
-        return Matrix.add(Matrix.dot(a, w), b);
+        Matrix aw = Matrix.dot(w, a);
+        return Matrix.add(aw, Matrix.broadcast(aw, b).get(1));
     }
 
     @Override
