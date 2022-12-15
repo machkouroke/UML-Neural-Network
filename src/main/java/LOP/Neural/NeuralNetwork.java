@@ -22,6 +22,11 @@ public abstract class NeuralNetwork {
     protected List<HiddenLayer> hiddenLayers;
     protected List<Layer> layers;
 
+    /**
+     * @param layerNumber Nombre de couches du réseau
+     * @param layersSize  Taille des neurones par couche. Le premier nombre est considéré comme le nombre
+     *                    d'entrées et le dernier comme le nombre de sorties
+     */
     NeuralNetwork(int layerNumber, int[] layersSize) {
         this.layerNumber = layerNumber;
         this.hiddenLayers = IntStream.range(1, layersSize.length - 2)
@@ -39,5 +44,5 @@ public abstract class NeuralNetwork {
 
     public abstract void fit(Matrix X, Matrix Y, int epochs);
 
-    public abstract List<Double> predict(double[] X);
+    public abstract Matrix predict(Matrix X);
 }
