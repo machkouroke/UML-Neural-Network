@@ -26,31 +26,38 @@ public class MLPerceptron extends NeuralNetwork {
     public List<Matrix> forwardPropagation(Matrix x) throws DimensionMismatchException {
         List<Matrix> output = new ArrayList<>();
         output.add(x);
-        for (int i = 0; i < this.layerNumber - 1; i++) {
-            Transfert transferFunc = ((HiddenLayer) this.layers.get(i)).getTransfertFunc();
-            Sum aggregateFunc = (Sum) ((HiddenLayer) this.layers.get(i)).getAggregateFunc();
-            if (i > 0) {
-                output.add(
-                        transferFunc.apply(
-                                aggregateFunc.apply(
-                                        output.get(i - 1),
-                                        ((HiddenLayer) this.layers.get(i)).getBias(),
-                                        ((HiddenLayer) this.layers.get(i)).getIncomingWeights()
-                                )
-                        )
-                );
-            }
+        for (int i = 1; i < this.layerNumber; i++) {
+            Transfert transferFunc = ((HiddenLayer) this.layers.get(i - 1)).getTransfertFunc();
+            Sum aggregateFunc = (Sum) ((HiddenLayer) this.layers.get(i - 1)).getAggregateFunc();
+
+            output.add(
+                    transferFunc.apply(
+                            aggregateFunc.apply(
+                                    output.get(i - 1),
+                                    ((HiddenLayer) this.layers.get(i - 1)).getBias(),
+                                    ((HiddenLayer) this.layers.get(i - 1)).getIncomingWeights()
+                            )
+                    )
+            );
+
 
         }
         return output;
     }
 
 
-    public HashMap<String, HashMap> backwardPropagation(List<Matrix> output, Matrix y) throws DimensionMismatchException {
+    public HashMap<String, HashMap<Integer, Matrix>> backwardPropagation(List<Matrix> output, Matrix y)
+            throws DimensionMismatchException {
         int m = y.getRows();
-        Matrix dZ = Matrix.subtract(output.get(this.layerNumber), y);
+        Matrix lastLayer = output.get(this.layers.size() - 1);
+        Matrix dZ = Matrix.subtract(
+                lastLayer,
+                Matrix.broadcast(
+                        lastLayer, y
+                ).get(1)
+        );
         HashMap<Integer, Matrix> dW = new HashMap<>();
-        HashMap<Integer, Double> db = new HashMap<>();
+        HashMap<Integer, Matrix> db = new HashMap<>();
         for (int i = this.layerNumber - 1; i > 0; i--) {
             Matrix activation = output.get(i - 1);
             dW.put(i, Matrix.dot(
@@ -60,36 +67,46 @@ public class MLPerceptron extends NeuralNetwork {
                     ),
                     (double) 1 / m
             ));
-            db.put(i, dZ.sum() / m);
-            dZ = Matrix.multiply(Matrix.dot(
-                            Matrix.transpose(this.hiddenLayers.get(i).getIncomingWeights()),
-                            dZ
-                    ), Matrix.multiply(
-                            activation,
-                            Matrix.subtract(
-                                    Matrix.fromNumber(
-                                            1, activation.getRows(), activation.getCols()
-                                    ),
-                                    activation
-                            )
-                    )
+            Matrix dZSum = dZ.sum(1);
+            db.put(i,
+                    Matrix.multiply(dZSum,
+                            Matrix.broadcast(dZSum, (double) 1 / m).get(1))
             );
+            if (i > 1) {
+                dZ = Matrix.multiply(
+                        Matrix.dot(
+                                Matrix.transpose(((HiddenLayer) this.layers.get(i - 1)).getIncomingWeights()),
+                                dZ
+                        ),
+                        Matrix.multiply(
+                                activation,
+                                Matrix.subtract(
+                                        Matrix.fromNumber(
+                                                1, activation.getRows(), activation.getCols()
+                                        ),
+                                        activation
+                                )
+                        )
+                );
+            }
+
         }
-        HashMap<String, HashMap> result = new HashMap<>();
+        HashMap<String, HashMap<Integer, Matrix>> result = new HashMap<>();
         result.put("dW", dW);
         result.put("db", db);
         return result;
     }
 
-    public void update(HashMap<Integer, Matrix> dW, HashMap<Integer, Double> db) throws DimensionMismatchException {
+    public void update(HashMap<Integer, Matrix> dW, HashMap<Integer, Matrix> db) throws DimensionMismatchException {
         for (int i = 1; i < this.layerNumber; i++) {
-            this.hiddenLayers.get(i).setIncomingWeights(Matrix.add(
-                    this.hiddenLayers.get(i).getIncomingWeights(),
-                    Matrix.dot(dW.get(i), this.learningRate)
+            HiddenLayer actualLayer = ((HiddenLayer) this.layers.get(i - 1));
+            actualLayer.setIncomingWeights(Matrix.add(
+                    actualLayer.getIncomingWeights(),
+                    Matrix.dot(dW.get(i), -this.learningRate)
             ));
-            this.hiddenLayers.get(i).setBias(Matrix.add(
-                    this.hiddenLayers.get(i).getBias(),
-                    Matrix.fromNumber(db.get(i) * this.learningRate, 1, 1)
+            actualLayer.setBias(Matrix.add(
+                    actualLayer.getBias(),
+                    Matrix.dot(db.get(i), -this.learningRate)
             ));
         }
     }
@@ -99,14 +116,15 @@ public class MLPerceptron extends NeuralNetwork {
     public void fit(Matrix x, Matrix y, int epochs) throws DimensionMismatchException {
         for (int i = 0; i < epochs; i++) {
             List<Matrix> a = this.forwardPropagation(x);
-            HashMap<String, HashMap> grads = this.backwardPropagation(a, y);
+            HashMap<String, HashMap<Integer, Matrix>> grads = this.backwardPropagation(a, y);
             this.update(grads.get("dW"), grads.get("db"));
         }
     }
 
     @Override
     public Matrix predict(Matrix x) throws DimensionMismatchException {
+        Matrix prediction = this.forwardPropagation(x).get(this.layerNumber - 1);
 
-        return this.forwardPropagation(x).get(this.layerNumber);
+        return prediction.gt(Matrix.broadcast(prediction, 0.5).get(1));
     }
 }

@@ -28,7 +28,7 @@ public abstract class NeuralNetwork {
      */
     NeuralNetwork(int layerNumber, int[] layersSize) {
         this.layerNumber = layerNumber;
-        this.hiddenLayers = IntStream.range(1, layersSize.length - 1)
+        this.hiddenLayers = IntStream.range(1, layersSize.length)
                 .mapToObj(i -> new HiddenLayer(layersSize[i], new Matrix(layersSize[i], layersSize[i - 1]),
                         new Matrix(layersSize[i], 1), new Sigmoid(), new Sum()))
                 .collect(Collectors.toList());
