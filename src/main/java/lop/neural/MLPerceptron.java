@@ -1,17 +1,16 @@
-package LOP.Neural;
+package lop.neural;
 
-import LOP.Function.Aggregate.Aggregate;
-import LOP.Function.Transfert.Sigmoid;
-import LOP.Function.Transfert.Transfert;
-import LOP.utilities.Matrix;
+import lop.function.aggregate.Sum;
+import lop.function.transfert.Transfert;
+import lop.utilities.Matrix;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class MLPerceptron extends NeuralNetwork {
-    Matrix weights_ih, weights_ho, bias_h, bias_o;
-    double l_rate = 0.01;
+
+    double learningRate = 0.01;
 
     /**
      * @param layerNumber Nombre de couches du réseau
@@ -22,21 +21,30 @@ public class MLPerceptron extends NeuralNetwork {
         super(layerNumber, layersSize);
     }
 
-    public List<Matrix> forwardPropagation(Matrix X) {
+    public List<Matrix> forwardPropagation(Matrix x) {
         List<Matrix> output = new ArrayList<>();
-        output.set(0, X);
+        output.set(0, x);
         for (int i = 1; i < this.layerNumber; i++) {
             Transfert transferFunc = this.hiddenLayers.get(i).getTransfertFunc();
-            Aggregate aggregateFunc = this.hiddenLayers.get(i).getAggregateFunc();
-            output.set(i, transferFunc.apply(aggregateFunc.apply(output.get(i - 1))));
+            Sum aggregateFunc = (Sum) this.hiddenLayers.get(i).getAggregateFunc();
+            output.set(
+                    i,
+                    transferFunc.apply(
+                            aggregateFunc.apply(
+                                    output.get(i - 1),
+                                    this.hiddenLayers.get(i).getBias(),
+                                    this.hiddenLayers.get(i).getIncomingWeights()
+                            )
+                    )
+            );
         }
         return output;
     }
 
 
-    public HashMap<String, HashMap> backwardPropagation(List<Matrix> output, Matrix Y) {
-        int m = Y.getRows();
-        Matrix dZ = Matrix.subtract(output.get(this.layerNumber), Y);
+    public HashMap<String, HashMap> backwardPropagation(List<Matrix> output, Matrix y) {
+        int m = y.getRows();
+        Matrix dZ = Matrix.subtract(output.get(this.layerNumber), y);
         HashMap<Integer, Matrix> dW = new HashMap<>();
         HashMap<Integer, Double> db = new HashMap<>();
         for (int i = this.layerNumber - 1; i > 0; i--) {
@@ -73,28 +81,28 @@ public class MLPerceptron extends NeuralNetwork {
         for (int i = 1; i < this.layerNumber; i++) {
             this.hiddenLayers.get(i).setIncomingWeights(Matrix.add(
                     this.hiddenLayers.get(i).getIncomingWeights(),
-                    Matrix.dot(dW.get(i), this.l_rate)
+                    Matrix.dot(dW.get(i), this.learningRate)
             ));
             this.hiddenLayers.get(i).setBias(Matrix.add(
                     this.hiddenLayers.get(i).getBias(),
-                    Matrix.fromNumber(db.get(i) * this.l_rate, 1, 1)
+                    Matrix.fromNumber(db.get(i) * this.learningRate, 1, 1)
             ));
         }
     }
 
 
     @Override
-    public void fit(Matrix X, Matrix Y, int epochs) {
+    public void fit(Matrix x, Matrix y, int epochs) {
         for (int i = 0; i < epochs; i++) {
-            List<Matrix> A = this.forwardPropagation(X);
-            HashMap<String, HashMap> grads = this.backwardPropagation(A, Y);
+            List<Matrix> a = this.forwardPropagation(x);
+            HashMap<String, HashMap> grads = this.backwardPropagation(a, y);
             this.update(grads.get("dW"), grads.get("db"));
         }
     }
 
     @Override
-    public Matrix predict(Matrix X) {
+    public Matrix predict(Matrix x) {
 
-       return this.forwardPropagation(X).get(this.layerNumber);
+        return this.forwardPropagation(x).get(this.layerNumber);
     }
 }

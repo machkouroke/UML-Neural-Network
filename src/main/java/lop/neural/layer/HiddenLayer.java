@@ -1,17 +1,17 @@
-package LOP.Neural.Layer;
+package lop.neural.layer;
 
-import LOP.Function.Aggregate.Aggregate;
-import LOP.Function.Transfert.Transfert;
-import LOP.Neural.Neural;
-import LOP.utilities.Matrix;
+import lop.function.aggregate.Aggregate;
+import lop.function.transfert.Transfert;
+import lop.neural.Neural;
+import lop.utilities.Matrix;
 
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class HiddenLayer extends Layer {
     private Matrix incomingWeights, bias;
-    private Transfert transfertFunc;
-    private Aggregate aggregateFunc;
+    private final Transfert transfertFunc;
+    private final Aggregate aggregateFunc;
 
     public Matrix getBias() {
         return bias;
@@ -25,17 +25,13 @@ public class HiddenLayer extends Layer {
         return transfertFunc;
     }
 
-    public void setTransfertFunc(Transfert transfertFunc) {
-        this.transfertFunc = transfertFunc;
-    }
+
 
     public Aggregate getAggregateFunc() {
         return aggregateFunc;
     }
 
-    public void setAggregateFunc(Aggregate aggregateFunc) {
-        this.aggregateFunc = aggregateFunc;
-    }
+
 
     public Matrix getIncomingWeights() {
         return incomingWeights;

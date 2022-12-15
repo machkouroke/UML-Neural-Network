@@ -1,9 +1,4 @@
-package LOP.Neural;
-
-import LOP.Function.Transfert.Sigmoid;
-import LOP.utilities.Matrix;
-
-import java.util.List;
+package lop.neural;
 
 public abstract class Perceptron extends NeuralNetwork {
 

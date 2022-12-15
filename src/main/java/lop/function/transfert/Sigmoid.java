@@ -1,14 +1,9 @@
-package LOP.Function.Transfert;
+package lop.function.transfert;
 
-import LOP.utilities.Matrix;
+import lop.utilities.Matrix;
 
 
-public class Sigmoid extends Transfert {
-
-    public Sigmoid() {
-        super();
-    }
-
+public class Sigmoid implements Transfert {
 
     @Override
     public Matrix apply(Matrix matrix) {

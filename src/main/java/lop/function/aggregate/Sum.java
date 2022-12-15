@@ -1,14 +1,14 @@
-package LOP.Function.Aggregate;
+package lop.function.aggregate;
 
-import LOP.utilities.Matrix;
+import lop.utilities.Matrix;
 
-public class Sum extends Aggregate {
+public class Sum implements Aggregate {
     public Matrix apply(Matrix a, Matrix b, Matrix w) {
         return Matrix.add(Matrix.dot(a, w), b);
     }
 
     @Override
     public Matrix apply(Matrix matrix) {
-        return null;
+        return matrix;
     }
 }

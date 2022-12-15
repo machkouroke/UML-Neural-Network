@@ -1,7 +1,6 @@
-package LOP.Neural.Layer;
+package lop.neural.layer;
 
-import LOP.Neural.Neural;
-import LOP.utilities.Matrix;
+import lop.neural.Neural;
 
 import java.util.Random;
 import java.util.stream.Collectors;

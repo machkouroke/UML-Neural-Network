@@ -1,12 +1,12 @@
-package LOP.Neural;
+package lop.neural;
 
-import LOP.Function.Aggregate.Aggregate;
-import LOP.Function.Transfert.Transfert;
+import lop.function.aggregate.Aggregate;
+import lop.function.transfert.Transfert;
 
 public class Neural {
-    private double bias;
-    private Aggregate aggregateFunc;
-    private Transfert transfertFunc;
+    private final double bias;
+    private final Aggregate aggregateFunc;
+    private final Transfert transfertFunc;
 
     public Neural(double bias, Aggregate aggregateFunc, Transfert transfertFunc) {
         this.bias = bias;

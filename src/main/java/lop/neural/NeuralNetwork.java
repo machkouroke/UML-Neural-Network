@@ -1,16 +1,15 @@
-package LOP.Neural;
+package lop.neural;
 
-import LOP.Function.Aggregate.Sum;
-import LOP.Function.Transfert.Sigmoid;
-import LOP.Neural.Layer.HiddenLayer;
-import LOP.Neural.Layer.InputLayer;
-import LOP.Neural.Layer.Layer;
-import LOP.utilities.Matrix;
+import lop.function.aggregate.Sum;
+import lop.function.transfert.Sigmoid;
+import lop.neural.layer.HiddenLayer;
+import lop.neural.layer.InputLayer;
+import lop.neural.layer.Layer;
+import lop.utilities.Matrix;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+
+
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -37,12 +36,12 @@ public abstract class NeuralNetwork {
         int last = layersSize.length - 1;
         this.outputLayer = new HiddenLayer(layersSize[last], new Matrix(layersSize[last - 1], layersSize[last]),
                 new Matrix(layersSize[last], 1), new Sigmoid(), new Sum());
-        this.layers = Stream.concat(Arrays.asList(inputLayer).stream(), Stream.concat(hiddenLayers.stream(),
-                        Arrays.asList(outputLayer).stream()))
+        this.layers = Stream.concat(Stream.of(inputLayer), Stream.concat(hiddenLayers.stream(),
+                        Stream.of(outputLayer)))
                 .collect(Collectors.toList());
     }
 
-    public abstract void fit(Matrix X, Matrix Y, int epochs);
+    public abstract void fit(Matrix x, Matrix y, int epochs);
 
-    public abstract Matrix predict(Matrix X);
+    public abstract Matrix predict(Matrix y);
 }

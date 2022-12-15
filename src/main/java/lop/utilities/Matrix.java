@@ -1,4 +1,4 @@
-package LOP.utilities;
+package lop.utilities;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,11 +25,7 @@ public class Matrix {
 
     int rows, cols;
 
-    public Matrix() {
-        this.rows = 0;
-        this.cols = 0;
-        this.data = new double[0][0];
-    }
+
 
     public Matrix(int rows, int cols) {
         data = new double[rows][cols];
@@ -42,21 +38,13 @@ public class Matrix {
         }
     }
 
-    public Matrix(double[][] data) {
-        this.data = Arrays.stream(data)
-                .map(double[]::clone)
-                .toArray(s -> data.clone());
 
-        this.rows = data.length;
-        this.cols = data[0].length;
-    }
 
-    public void add(double scaler) {
+    public void add(double scalar) {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                this.data[i][j] += scaler;
+                this.data[i][j] += scalar;
             }
-
         }
     }
 

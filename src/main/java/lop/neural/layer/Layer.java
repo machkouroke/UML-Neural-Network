@@ -1,6 +1,6 @@
-package LOP.Neural.Layer;
+package lop.neural.layer;
 
-import LOP.Neural.Neural;
+import lop.neural.Neural;
 import java.util.List;
 
 public class Layer {
