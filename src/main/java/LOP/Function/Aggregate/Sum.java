@@ -4,7 +4,7 @@ import LOP.utilities.Matrix;
 
 public class Sum extends Aggregate {
     public Matrix apply(Matrix a, Matrix b, Matrix w) {
-        return Matrix.add(Matrix.multiply(a, w), b);
+        return Matrix.add(Matrix.dot(a, w), b);
     }
 
     @Override

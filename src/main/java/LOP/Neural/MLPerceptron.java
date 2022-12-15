@@ -5,99 +5,96 @@ import LOP.Function.Transfert.Sigmoid;
 import LOP.Function.Transfert.Transfert;
 import LOP.utilities.Matrix;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MLPerceptron extends NeuralNetwork {
     Matrix weights_ih, weights_ho, bias_h, bias_o;
     double l_rate = 0.01;
 
-    public MLPerceptron(int layerNumber, int i, int h, int o, int[] layersSize) {
+    /**
+     * @param layerNumber Nombre de couches du réseau
+     * @param layersSize  Taille des neurones par couche. Le premier nombre est considéré comme le nombre
+     *                    d'entrées et le dernier comme le nombre de sorties
+     */
+    public MLPerceptron(int layerNumber, int[] layersSize) {
         super(layerNumber, layersSize);
-        weights_ih = new Matrix(h, i);
-        weights_ho = new Matrix(o, h);
-
-        bias_h = new Matrix(h, 1);
-        bias_o = new Matrix(o, 1);
     }
 
-    public void forwadPropagation(double[] X, double[] Y) {
-        /* Forward*/
-        Matrix input = Matrix.fromArray(X);
-        Matrix z = input;
-        for (int i = 0; i < this.layerNumber; i++) {
+    public List<Matrix> forwardPropagation(Matrix X) {
+        List<Matrix> output = new ArrayList<>();
+        output.set(0, X);
+        for (int i = 1; i < this.layerNumber; i++) {
             Transfert transferFunc = this.hiddenLayers.get(i).getTransfertFunc();
             Aggregate aggregateFunc = this.hiddenLayers.get(i).getAggregateFunc();
-            z = transferFunc.apply(aggregateFunc.apply(z));
+            output.set(i, transferFunc.apply(aggregateFunc.apply(output.get(i - 1))));
         }
-
-
-        /*Backward */
-//        Matrix error = Matrix.subtract(Matrix.fromArray(Y), z);
-//        Matrix gradient = this.outputLayer.getTransfertFunc().derivative(z);
-//        gradient.multiply(error);
-//        gradient.multiply(this.l_rate);
-//        Matrix z_T = Matrix.transpose(z);
-//        Matrix who_delta = Matrix.multiply(gradient, z_T);
-//        for (int i = this.layerNumber - 1; i >= 0; i--) {
-//
-//        }
-//
-//        Matrix hidden = Matrix.multiply(weights_ih, input);
-//        hidden.add(bias_h);
-//        hidden = new Sigmoid().apply(hidden);
-//
-//        Matrix output = Matrix.multiply(weights_ho, hidden);
-//        output.add(bias_o);
-//        output = Sigmoid.apply(output);
-//
-//        Matrix target = Matrix.fromArray(Y);
-//
-//        Matrix error = Matrix.subtract(target, output);
-//        Matrix gradient = Sigmoid.derivative(output);
-//        gradient.multiply(error);
-//        gradient.multiply(l_rate);
-//
-//        Matrix hidden_T = Matrix.transpose(hidden);
-//        Matrix who_delta = Matrix.multiply(gradient, hidden_T);
-//
-//        weights_ho.add(who_delta);
-//        bias_o.add(gradient);
-//
-//        Matrix who_T = Matrix.transpose(weights_ho);
-//        Matrix hidden_errors = Matrix.multiply(who_T, error);
-//
-//        Matrix h_gradient = Sigmoid.derivative(hidden);
-//        h_gradient.multiply(hidden_errors);
-//        h_gradient.multiply(l_rate);
-//
-//        Matrix i_T = Matrix.transpose(input);
-//        Matrix wih_delta = Matrix.multiply(h_gradient, i_T);
-//
-//        weights_ih.add(wih_delta);
-//        bias_h.add(h_gradient);
-
+        return output;
     }
+
+
+    public HashMap<String, HashMap> backwardPropagation(List<Matrix> output, Matrix Y) {
+        int m = Y.getRows();
+        Matrix dZ = Matrix.subtract(output.get(this.layerNumber), Y);
+        HashMap<Integer, Matrix> dW = new HashMap<>();
+        HashMap<Integer, Double> db = new HashMap<>();
+        for (int i = this.layerNumber - 1; i > 0; i--) {
+            Matrix activation = output.get(i - 1);
+            dW.put(i, Matrix.dot(
+                    Matrix.dot(
+                            dZ,
+                            Matrix.transpose(activation)
+                    ),
+                    (double) 1 / m
+            ));
+            db.put(i, dZ.sum() / m);
+            dZ = Matrix.multiply(Matrix.dot(
+                            Matrix.transpose(this.hiddenLayers.get(i).getIncomingWeights()),
+                            dZ
+                    ), Matrix.multiply(
+                            activation,
+                            Matrix.subtract(
+                                    Matrix.fromNumber(
+                                            1, activation.getRows(), activation.getCols()
+                                    ),
+                                    activation
+                            )
+                    )
+            );
+        }
+        HashMap<String, HashMap> result = new HashMap<>();
+        result.put("dW", dW);
+        result.put("db", db);
+        return result;
+    }
+
+    public void update(HashMap<Integer, Matrix> dW, HashMap<Integer, Double> db) {
+        for (int i = 1; i < this.layerNumber; i++) {
+            this.hiddenLayers.get(i).setIncomingWeights(Matrix.add(
+                    this.hiddenLayers.get(i).getIncomingWeights(),
+                    Matrix.dot(dW.get(i), this.l_rate)
+            ));
+            this.hiddenLayers.get(i).setBias(Matrix.add(
+                    this.hiddenLayers.get(i).getBias(),
+                    Matrix.fromNumber(db.get(i) * this.l_rate, 1, 1)
+            ));
+        }
+    }
+
 
     @Override
     public void fit(Matrix X, Matrix Y, int epochs) {
         for (int i = 0; i < epochs; i++) {
-            int sampleN = (int) (Math.random() * X.getRows());
-            this.train(X.getData()[sampleN], Y.getData()[sampleN]);
+            List<Matrix> A = this.forwardPropagation(X);
+            HashMap<String, HashMap> grads = this.backwardPropagation(A, Y);
+            this.update(grads.get("dW"), grads.get("db"));
         }
     }
 
     @Override
-    public List<Double> predict(double[] X) {
+    public Matrix predict(Matrix X) {
 
-        Matrix input = Matrix.fromArray(X);
-        Matrix hidden = Matrix.multiply(weights_ih, input);
-        hidden.add(bias_h);
-        hidden = Sigmoid.apply(hidden);
-
-        Matrix output = Matrix.multiply(weights_ho, hidden);
-        output.add(bias_o);
-        output = Sigmoid.apply(output);
-
-        return output.toArray();
+       return this.forwardPropagation(X).get(this.layerNumber);
     }
 }
