@@ -25,6 +25,12 @@ public class Matrix {
 
     int rows, cols;
 
+    public Matrix() {
+        this.rows = 0;
+        this.cols = 0;
+        this.data = new double[0][0];
+    }
+
     public Matrix(int rows, int cols) {
         data = new double[rows][cols];
         this.rows = rows;
@@ -79,7 +85,7 @@ public class Matrix {
 
     public static Matrix subtract(Matrix a, Matrix b) {
 
-        return Matrix.add(a, Matrix.multiply(b, -1));
+        return Matrix.add(a, Matrix.dot(b, -1));
     }
 
     public static Matrix transpose(Matrix a) {
@@ -99,7 +105,7 @@ public class Matrix {
         return temp;
     }
 
-    public static Matrix multiply(Matrix a, Matrix b) {
+    public static Matrix dot(Matrix a, Matrix b) {
         Matrix temp = new Matrix(a.rows, b.cols);
         for (int i = 0; i < temp.rows; i++) {
             for (int j = 0; j < temp.cols; j++) {
@@ -113,7 +119,17 @@ public class Matrix {
         return temp;
     }
 
-    public static Matrix multiply(Matrix a, double c) {
+    public static Matrix multiply(Matrix a, Matrix b) {
+        Matrix temp = new Matrix(a.rows, b.cols);
+        for (int i = 0; i < temp.rows; i++) {
+            for (int j = 0; j < temp.cols; j++) {
+                temp.data[i][j] = a.data[i][j] * b.data[i][j];
+            }
+        }
+        return temp;
+    }
+
+    public static Matrix dot(Matrix a, double c) {
         Matrix temp = new Matrix(a.rows, a.cols);
         for (int i = 0; i < temp.rows; i++) {
             for (int j = 0; j < temp.cols; j++) {
@@ -123,22 +139,19 @@ public class Matrix {
         return temp;
     }
 
-    public void multiply(Matrix a) {
-        for (int i = 0; i < a.rows; i++) {
-            for (int j = 0; j < a.cols; j++) {
-                this.data[i][j] *= a.data[i][j];
-            }
-        }
-
-    }
-
-    public void multiply(double a) {
+    public static Matrix fromNumber(double x, int rows, int cols) {
+        Matrix temp = new Matrix(rows, cols);
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                this.data[i][j] *= a;
+                temp.data[i][j] = x;
             }
         }
-
+        return temp;
+    }
+    public double sum() {
+        return Arrays.stream(this.getData())
+                .flatMapToDouble(Arrays::stream)
+                .sum();
     }
 
     public List<Double> toArray() {
