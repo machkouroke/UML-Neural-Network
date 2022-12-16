@@ -9,7 +9,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 
-public class Matrix {
+public class Matrix implements SerializationUtil {
+    private static final long serialversionUID = 1L;
     public double[][] data;
 
     public double[][] getData() {

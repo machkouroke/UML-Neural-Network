@@ -7,14 +7,17 @@ import lop.neural.layer.HiddenLayer;
 import lop.neural.layer.InputLayer;
 import lop.neural.layer.Layer;
 import lop.utilities.Matrix;
+import lop.utilities.SerializationUtil;
 
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public abstract class NeuralNetwork {
+public abstract class NeuralNetwork implements SerializationUtil {
+    private static final long serialversionUID = 1L;
     protected int layerNumber;
     protected InputLayer inputLayer;
     protected HiddenLayer outputLayer;
@@ -44,4 +47,7 @@ public abstract class NeuralNetwork {
     public abstract void fit(Matrix x, Matrix y, int epochs) throws DimensionMismatchException;
 
     public abstract Matrix predict(Matrix y) throws DimensionMismatchException;
+
+
+
 }

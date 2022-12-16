@@ -127,4 +127,6 @@ public class MLPerceptron extends NeuralNetwork {
 
         return prediction.gt(Matrix.broadcast(prediction, 0.5).get(1));
     }
+
+
 }
