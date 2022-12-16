@@ -1,6 +1,3 @@
-package lop;
-
-
 import lop.exception.DimensionMismatchException;
 import lop.neural.MLPerceptron;
 import lop.utilities.Matrix;
