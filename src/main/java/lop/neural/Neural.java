@@ -2,8 +2,10 @@ package lop.neural;
 
 import lop.function.aggregate.Aggregate;
 import lop.function.transfert.Transfert;
+import lop.utilities.SerializationUtil;
 
-public class Neural {
+public class Neural implements SerializationUtil {
+    private static final long serialversionUID = 1L;
     private final double bias;
     private final Aggregate aggregateFunc;
     private final Transfert transfertFunc;
