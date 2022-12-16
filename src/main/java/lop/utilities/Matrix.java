@@ -52,6 +52,16 @@ public class Matrix implements SerializationUtil {
         this.cols = data[0].length;
     }
 
+    public Matrix(List<List<Double>> data) {
+        this.data = data.stream().
+                map(x -> x.stream().mapToDouble(Double::doubleValue).toArray()).
+                collect(Collectors.toList()).
+                toArray(new double[0][0]);
+
+        this.rows = data.size();
+        this.cols = data.get(0).size();
+    }
+
 
     public static Matrix add(Matrix a, Matrix b) throws DimensionMismatchException {
         if (a.cols != b.cols || a.rows != b.rows) {
