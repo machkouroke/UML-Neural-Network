@@ -341,4 +341,26 @@ public class Matrix implements SerializationUtil {
     public Matrix gt(Matrix b) throws DimensionMismatchException {
         return b.lt(this);
     }
+
+    public Matrix getColumn(int j) {
+        Matrix temp = new Matrix(this.rows, 1);
+        for (int i = 0; i < this.rows; i++) {
+            temp.data[i][0] = this.data[i][j];
+        }
+        return temp;
+    }
+
+    public Matrix dropColumn(int j) {
+        Matrix temp = new Matrix(this.rows, this.cols - 1);
+        for (int i = 0; i < this.rows; i++) {
+            for (int k = 0; k < this.cols; k++) {
+                if (k < j) {
+                    temp.data[i][k] = this.data[i][k];
+                } else if (k > j) {
+                    temp.data[i][k - 1] = this.data[i][k];
+                }
+            }
+        }
+        return temp;
+    }
 }
