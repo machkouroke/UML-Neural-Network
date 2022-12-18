@@ -1,31 +1,37 @@
 package lop.utilities;
 
+import javafx.util.Pair;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CsvReader {
-    private String path;
+    private Reader reader;
     private String separator;
     private String[] header;
 
 
-    public CsvReader(String path, String separator) {
-        this.path = path;
+    public CsvReader(File file, String separator) throws FileNotFoundException {
+        this.reader = new FileReader(file);
+        this.separator = separator;
     }
 
-    public CsvReader(String path) {
-        this.path = path;
-        this.separator = ",";
+    public CsvReader(String content, String separator) {
+        this.reader = new StringReader(content);
+        this.separator = separator;
     }
 
-    public Matrix read() throws FileNotFoundException {
-        File file = new File(this.path);
-        FileReader fr = new FileReader(file);
+    /**
+     * Read csv file and return a matrix and a list of header
+     * @return Pair<Matrix, List<String>> matrix and header
+     */
+    public Pair<Matrix, List<String>> read() {
         List<List<Double>> data = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(fr)) {
+        try (BufferedReader br = new BufferedReader(this.reader)) {
             String line;
             header = br.readLine().split(separator);
             while ((line = br.readLine()) != null) {
@@ -37,7 +43,6 @@ public class CsvReader {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return new Matrix(data);
-
+        return new Pair<>(new Matrix(data), Stream.of(header).collect(Collectors.toList()));
     }
 }
