@@ -1,6 +1,5 @@
 package lop.utilities;
 
-import javafx.util.Pair;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -27,7 +26,8 @@ public class CsvReader {
 
     /**
      * Read csv file and return a matrix and a list of header
-     * @return Pair<Matrix, List<String>> matrix and header
+     *
+     * @return Pair<Matrix, List < String>> matrix and header
      */
     public Pair<Matrix, List<String>> read() {
         List<List<Double>> data = new ArrayList<>();

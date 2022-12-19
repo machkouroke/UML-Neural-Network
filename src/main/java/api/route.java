@@ -1,28 +1,32 @@
 package api;
 
-import javafx.util.Pair;
+
 import lop.exception.DimensionMismatchException;
-
 import java.io.File;
-
 import lop.neural.MLPerceptron;
 import lop.utilities.CsvReader;
 import lop.utilities.Matrix;
+import lop.utilities.Pair;
 import lop.utilities.SerializationUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import spark.Request;
-
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
-
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import static spark.Spark.*;
 
 
 public class route {
+    /**
+     *
+     * @param request
+     * @return
+     */
     public static Pair<Matrix, List<String>> loadMatrix(Request request) {
         JSONObject body = new JSONObject(request.body());
 
@@ -31,6 +35,12 @@ public class route {
         return csvReader.read();
     }
 
+    /**
+     *
+     * @param request
+     * @param nFeatures
+     * @return
+     */
     public static MLPerceptron createNeural(Request request, int nFeatures) {
         JSONObject body = new JSONObject(request.body());
         String hiddenLayer = body.getString("hidden-layer") + " 1";
@@ -44,6 +54,13 @@ public class route {
         return new MLPerceptron(layer.length, layer);
     }
 
+    /**
+     * @param request
+     * @param neuron
+     * @param data
+     * @throws DimensionMismatchException
+     * @throws IOException
+     */
     public static void fitNeuron(Request request,
                                  MLPerceptron neuron,
                                  Pair<Matrix, List<String>> data) throws
@@ -58,18 +75,23 @@ public class route {
         Map<String, List<String>> headers = new HashMap<>();
         headers.put("features", data.getValue().stream().filter(s -> !s.equals(targetColumn)).collect(Collectors.toList()));
         headers.put("label", Collections.singletonList(targetColumn));
+
+        Path userModelPath = Paths.get("model/" + body.get("user"));
+        Files.createDirectories(userModelPath);
+
+
         SerializationUtil.serialize(
                 neuron,
-                "model/" + body.get("user") + "/" + body.get("model-name") + ".model"
+                userModelPath.toAbsolutePath().toString() + "/" + body.get("model-name") + ".model"
         );
         SerializationUtil.serialize(
                 headers,
-                "model/" + body.get("user") + "/" + body.get("model-name") + ".header"
+                userModelPath.toAbsolutePath().toString() + "/" + body.get("model-name") + ".header"
         );
     }
 
     public static void main(String[] args) {
-        port(8080);
+        port(8000);
 
         /**
          * Affiche la liste de tous les modèles d'un utilisateur données

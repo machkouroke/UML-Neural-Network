@@ -1,6 +1,6 @@
 package lop.utilities;
 
-import javafx.util.Pair;
+
 import lop.exception.DimensionMismatchException;
 
 import java.util.Arrays;
