@@ -92,6 +92,7 @@ public class route {
 
     public static void main(String[] args) {
         port(8000);
+        get("/", (req, res) -> "Bienvenue dans le réseaux de neurones");
 
         /**
          * Affiche la liste de tous les modèles d'un utilisateur données
