@@ -5,7 +5,8 @@ WORKDIR /app
 COPY . .
 
 EXPOSE 8000
-RUN ./script/install-maven.sh
+COPY ./script/install-maven.sh .
+RUN bash install-maven.sh
 RUN mkdir model
 ENV M2_HOME='/opt/apache-maven-3.6.3'
 ENV PATH=$PATH:$M2_HOME/bin
